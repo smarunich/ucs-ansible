@@ -1,0 +1,165 @@
+#ntp_server: ntp.esl.cisco.com
+#dns_server: 198.18.134.242
+uuid_pool: {"name":"cisco-hci", "from":"0000-000000000001", "to":"0000-0000000001f4"}
+mac_list:
+  - name: cisco-hci-A
+    order: sequential
+    description: cisco-hci Side A
+    from: 00:25:B5:88:AA:00
+    to: 00:25:B5:88:AA:FF
+  - name: cisco-hci-B
+    order: sequential
+    description: cisco-hci Side B
+    from: 00:25:B5:88:BB:00
+    to: 00:25:B5:88:BB:FF
+vnic_list: 
+  - name: cisco-hci-mgmt-A
+    side: A
+    mac_pool: cisco-hci-A
+    description: cisco-hci A side VNIC
+    vlan: 
+    - ESXi-MGMT
+  - name: cisco-hci-mgmt-B
+    side: B
+    mac_pool: cisco-hci-B
+    description: cisco-hci B side VNIC
+    vlan: 
+    - ESXi-MGMT
+  - name: cisco-hci-data-A
+    side: A
+    mac_pool: cisco-hci-A
+    description: cisco-hci A side VNIC
+    vlan: 
+    - vTEP
+    - vMotion
+    mtu: 9000
+  - name: cisco-hci-data-B
+    side: B
+    mac_pool: cisco-hci-B
+    description: cisco-hci B side VNIC
+    vlan: 
+    - vTEP
+    - vMotion
+    mtu: 9000
+  - name: cisco-hci-storage-A
+    side: A
+    mac_pool: cisco-hci-A
+    description: cisco-hci A side VNIC
+    vlan: 
+    - vSAN
+    mtu: 9000
+  - name: cisco-hci-storage-B
+    side: B
+    mac_pool: cisco-hci-B
+    description: cisco-hci B side VNIC
+    vlan: 
+    - vSAN
+    mtu: 9000
+
+lan_conn_list:
+  - name: cisco-hci
+    vnic_list:
+    - name: eth0
+      vnic_template: cisco-hci-mgmt-A
+      order: "1"
+      adapter_policy: VMware
+    - name: eth1
+      vnic_template: cisco-hci-mgmt-B
+      order: "2"
+      adapter_policy: VMware
+    - name: eth2
+      vnic_template: cisco-hci-data-A
+      order: "3"
+      adapter_policy: VMware
+    - name: eth3
+      vnic_template: cisco-hci-data-B
+      order: "4"
+      adapter_policy: VMware
+    - name: eth4
+      vnic_template: cisco-hci-storage-A
+      order: "5"
+      adapter_policy: VMware
+    - name: eth5
+      vnic_template: cisco-hci-storage-B
+      order: "6"
+      adapter_policy: VMware
+
+
+boot_devices:
+  - {"device_order":"1", "device_name": "local_lun"}
+  - {"device_order":"2", "device_name": "cd_dvd_cimc"}
+
+storage_profile:
+  name: cisco-hci
+  lun_list:
+  - lun_name: cisco-hci-boot-lun
+    size: "1"
+    expand: "yes"
+    disk_group_policy: cisco-hci-boot
+  - lun_name: cisco-hci-lun-disk3
+    size: "1"
+    expand: "yes"
+    disk_group_policy: cisco-hci-disk3
+  - lun_name: cisco-hci-lun-disk4
+    size: "1"
+    expand: "yes"
+    disk_group_policy: cisco-hci-disk4
+  - lun_name: cisco-hci-lun-disk5
+    size: "1"
+    expand: "yes"
+    disk_group_policy: cisco-hci-disk5
+  - lun_name: cisco-hci-lun-disk6
+    size: "1"
+    expand: "yes"
+    disk_group_policy: cisco-hci-disk6
+  - lun_name: cisco-hci-lun-disk7
+    size: "1"
+    expand: "yes"
+    disk_group_policy: cisco-hci-disk7
+  - lun_name: cisco-hci-lun-disk8
+    size: "1"
+    expand: "yes"
+    disk_group_policy: cisco-hci-disk8
+  - lun_name: cisco-hci-lun-disk9
+    size: "1"
+    expand: "yes"
+    disk_group_policy: cisco-hci-disk9
+  - lun_name: cisco-hci-lun-disk10
+    size: "1"
+    expand: "yes"
+    disk_group_policy: cisco-hci-disk10
+  - lun_name: cisco-hci-lun-disk11
+    size: "1"
+    expand: "yes"
+    disk_group_policy: cisco-hci-disk11
+          
+disk_group_policy: {"name":"cisco-hci-boot", "RAID_level":"mirror", "disk_slot_numbers": ["1","2"]}
+disk_group_policy: {"name":"cisco-hci-disk3", "RAID_level":"stripe", "disk_slot_numbers": ["3"]}
+disk_group_policy: {"name":"cisco-hci-disk4", "RAID_level":"stripe", "disk_slot_numbers": ["4"]}
+disk_group_policy: {"name":"cisco-hci-disk5", "RAID_level":"stripe", "disk_slot_numbers": ["5"]}
+disk_group_policy: {"name":"cisco-hci-disk6", "RAID_level":"stripe", "disk_slot_numbers": ["6"]}
+disk_group_policy: {"name":"cisco-hci-disk7", "RAID_level":"stripe", "disk_slot_numbers": ["7"]}
+disk_group_policy: {"name":"cisco-hci-disk8", "RAID_level":"stripe", "disk_slot_numbers": ["8"]}
+disk_group_policy: {"name":"cisco-hci-disk9", "RAID_level":"stripe", "disk_slot_numbers": ["9"]}
+disk_group_policy: {"name":"cisco-hci-disk10", "RAID_level":"stripe", "disk_slot_numbers": ["10"]}
+disk_group_policy: {"name":"cisco-hci-disk11", "RAID_level":"stripe", "disk_slot_numbers": ["11"]}
+
+service_profile_template:
+  - name: cisco-hci-ESXi
+    template_type: updating-template
+    uuid_pool: cisco-hci
+    storage_profile: cisco-hci
+    bios_policy: cisco-hci
+    boot_policy: cisco-hci
+    vmedia_policy: cisco-hci
+    lan_connectivity_policy: cisco-hci
+    host_fw_package: default
+    scrub_policy: cisco-hci    
+
+service_profile_list:
+  - name: node01
+    src_templ_name: cisco-hci
+  - name: node02
+    src_templ_name: cisco-hci
+  - name: node03
+    src_templ_name: cisco-hci

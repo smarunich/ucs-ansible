@@ -1,0 +1,67 @@
+---
+# This role contains tasks for configuring LAN settings.
+
+- name: Ensure virtual media policy is created.
+  cisco_ucs_vmedia_policy:
+    name: cisco-hci
+    descr: OS Boot VMedia
+    retry: "yes"
+    mounts:
+    - name: esxi6.0
+      descr: VMware Install Media
+      device: cdd
+      protocol: http
+      remote_ip: 10.106.22.111
+      file: variable
+      path: kubam
+    ucs_ip: "{{ucs_ip}}"
+    ucs_username: "{{ucs_username}}"
+    ucs_password: "{{ucs_password}}"
+
+- name: ensure cisco-hci boot policy
+  cisco_ucs_boot_policy: 
+    name: "cisco-hci"
+    reboot_on_update: "yes"
+    enforce_vnic_name: "yes"
+    ucs_ip: "{{ucs_ip}}"
+    ucs_username: "{{ucs_username}}"
+    ucs_password: "{{ucs_password}}"
+    
+- name: ensure cisco-hci boot order
+  cisco_ucs_boot_order:
+    name: "cisco-hci"
+    devices: "{{ boot_devices }}"
+    ucs_ip: "{{ucs_ip}}"
+    ucs_username: "{{ucs_username}}"
+    ucs_password: "{{ucs_password}}"
+
+- name: ensure cisco-hci UUID pool is created
+  cisco_ucs_uuid:
+    uuid_pool: "{{ uuid_pool }}"
+    ucs_ip: "{{ucs_ip}}"
+    ucs_username: "{{ucs_username}}"
+    ucs_password: "{{ucs_password}}"
+
+- name: ensure cisco-hci bios policy is created
+  cisco_ucs_bios_policy:
+    name: "cisco-hci"
+    descr: "Make sure the BIOS policy allows for cdn control."
+    cdn_control: "enabled"
+    resume_on_power_loss: "last-state"
+    reboot_on_update: "yes"
+    ucs_ip: "{{ucs_ip}}"
+    ucs_username: "{{ucs_username}}"
+    ucs_password: "{{ucs_password}}"
+
+- name: ensure cisco-hci scrub policy is created
+  cisco_ucs_scrub_policy:
+    name: "cisco-hci"
+    descr: "Destroy disks when disassociated."
+    disk_scrub: "yes"
+    ucs_ip: "{{ucs_ip}}"
+    ucs_username: "{{ucs_username}}"
+    ucs_password: "{{ucs_password}}"
+
+
+    
+    
